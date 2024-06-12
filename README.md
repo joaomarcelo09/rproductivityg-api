@@ -64,7 +64,7 @@ Este projeto é uma aplicação de lista de tarefas (TodoList) desenvolvida em J
 
 1. **Clone o repositório:**
    ```sh
-   git clone https://github.com/seu-usuario/todolist.git
+   git clone https://github.com/joaomarcelo09/todolist.git
    cd todolist
 
 2. **Configuração do Banco de Dados:**
