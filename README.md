@@ -2,7 +2,7 @@
 
 ## Descrição
 
-Este projeto é uma aplicação de lista de tarefas (TodoList) desenvolvida em Java utilizando Spring Boot, JPA, Maven e MySQL. A aplicação permite que os usuários criem, deletem e listem tarefas, compartilhem tarefas para visualização apenas e apliquem filtros nas listas de tarefas.
+Este projeto é uma aplicação de lista de tarefas (TodoList) desenvolvida em Java. A aplicação permite que os usuários criem, deletem e listem tarefas, compartilhem tarefas para visualização apenas e apliquem filtros nas listas de tarefas.
 
 ## Funcionalidades
 
