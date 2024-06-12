@@ -15,7 +15,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.GET, "test").permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 );
         return http.build();
     }
