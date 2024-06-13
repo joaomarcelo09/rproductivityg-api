@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -32,7 +33,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = this.recoverToken(request);
         var login = tokenService.validateToken(token);
 
-        if (login != "The token is null." ) {
+        if (!Objects.equals(login, "The token is null.")) {
             User user = userRepository.findByEmail(login).orElseThrow(() -> new RuntimeException("User not found"));
             var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
             var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
