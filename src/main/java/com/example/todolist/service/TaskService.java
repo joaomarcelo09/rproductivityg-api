@@ -1,5 +1,6 @@
 package com.example.todolist.service;
 
+import com.example.todolist.dto.TaskDto;
 import com.example.todolist.entity.Task;
 import com.example.todolist.repository.TaskRepository;
 import org.springframework.data.domain.Sort;
@@ -19,7 +20,7 @@ public class TaskService {
 
     public List<Task> getAllTasks() {
         Sort sort = Sort.by("priority").descending();
-        return taskRepository.findAll();
+        return taskRepository.findAll(sort);
     }
 
     public Optional<Task> getTaskById(Long id) {

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Optional;
+
 @Entity
 @Table(name = "tasks")
 @Getter
@@ -16,14 +18,17 @@ import lombok.Setter;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id_task;
     private String title;
     private String description;
     private int priority;
     private Boolean completed;
     private String date_limit;
 
-    @ManyToOne
+    @ManyToOne//(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void setUser(Optional<User> user) {
+    }
 }

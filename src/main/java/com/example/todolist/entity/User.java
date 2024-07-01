@@ -19,12 +19,12 @@ import java.util.Set;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id_user;
     private String name;
     private String email;
     private String password;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<Task> task = new HashSet<>();
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//    private Set<Task> task = new HashSet<>();
 }
