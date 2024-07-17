@@ -1,4 +1,4 @@
-package com.example.todolist.dto;
+package com.example.todolist.auth.dto;
 
 public record RegisterRequestDto(String name, String email, String password) {
 }

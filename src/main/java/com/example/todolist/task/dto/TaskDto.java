@@ -1,4 +1,4 @@
-package com.example.todolist.dto;
+package com.example.todolist.task.dto;
 
 //import lombok.Getter;
 //import lombok.Setter;

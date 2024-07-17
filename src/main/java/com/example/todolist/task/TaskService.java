@@ -1,8 +1,7 @@
-package com.example.todolist.service;
+package com.example.todolist.task;
 
-import com.example.todolist.dto.TaskDto;
-import com.example.todolist.entity.Task;
-import com.example.todolist.repository.TaskRepository;
+import com.example.todolist.task.dto.CreateTaskResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +11,7 @@ import java.util.Optional;
 @Service
 public class TaskService {
 
+    @Autowired
     private TaskRepository taskRepository;
 
     public TaskService(TaskRepository taskRepository) {
@@ -27,8 +27,9 @@ public class TaskService {
         return taskRepository.findById(id);
     }
 
-    public Task saveTask(Task task) {
-        return taskRepository.save(task);
+    public CreateTaskResponse saveTask(Task task) {
+        Task savedTask = taskRepository.save(task);
+        return new CreateTaskResponse(savedTask.getId_task(), savedTask.getTitle(), savedTask.getDescription());
     }
 
     public Task updateTask(Task task) {

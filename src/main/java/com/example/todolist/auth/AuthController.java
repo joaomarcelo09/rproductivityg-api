@@ -1,11 +1,11 @@
-package com.example.todolist.controller;
+package com.example.todolist.auth;
 
-import com.example.todolist.dto.LoginRequestDto;
-import com.example.todolist.dto.RegisterRequestDto;
-import com.example.todolist.dto.ResponseDto;
-import com.example.todolist.entity.User;
+import com.example.todolist.auth.dto.LoginRequestDto;
+import com.example.todolist.auth.dto.RegisterRequestDto;
+import com.example.todolist.auth.dto.ResponseDto;
+import com.example.todolist.user.User;
 import com.example.todolist.infra.security.TokenService;
-import com.example.todolist.repository.UserRepository;
+import com.example.todolist.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;

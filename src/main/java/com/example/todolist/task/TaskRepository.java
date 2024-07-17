@@ -1,6 +1,5 @@
-package com.example.todolist.repository;
+package com.example.todolist.task;
 
-import com.example.todolist.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

@@ -1,16 +1,14 @@
-package com.example.todolist.controller;
+package com.example.todolist.task;
 
-import com.example.todolist.dto.TaskDto;
-import com.example.todolist.entity.Task;
-import com.example.todolist.entity.User;
-import com.example.todolist.repository.UserRepository;
-import com.example.todolist.service.TaskService;
+import com.example.todolist.task.dto.CreateTaskResponse;
+import com.example.todolist.task.dto.TaskDto;
+import com.example.todolist.user.User;
+import com.example.todolist.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 
@@ -19,20 +17,24 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TaskController {
 
+    @Autowired
     private TaskService taskService;
-    private UserRepository userService;
 
-    public TaskController(TaskService taskService, UserRepository userService) {
-        this.taskService = taskService;
-        this.userService = userService;
-    }
+    @Autowired
+    private UserService userService;
 
 
     @PostMapping
-    public ResponseEntity createTask(@RequestBody TaskDto task) {
-        Optional<User> user = userService.findById(task.user_id());
+    public ResponseEntity<CreateTaskResponse> createTask(@RequestBody TaskDto task) {
+        Optional<User> user = this.userService.findById(task.user_id());
+        if(user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User userExists = user.get();
+
         Task newTask = new Task();
-        newTask.setUser(user);
+        newTask.setUser(userExists);
         newTask.setTitle(task.title());
         newTask.setDescription(task.description());
         newTask.setCompleted(task.completed());
@@ -40,13 +42,13 @@ public class TaskController {
         newTask.setDate_limit(task.date_limit());
 
         return ResponseEntity.ok(this.taskService.saveTask(newTask));
-    };
+    }
 
     @PatchMapping
     public ResponseEntity updateTask(@RequestBody Task task) {
         Task upTask = this.taskService.updateTask(task);
         return ResponseEntity.ok(upTask);
-    };
+    }
 
     @GetMapping
     public ResponseEntity getTasks() {

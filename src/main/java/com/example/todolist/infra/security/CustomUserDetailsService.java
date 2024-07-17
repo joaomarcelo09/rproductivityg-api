@@ -1,7 +1,7 @@
 package com.example.todolist.infra.security;
 
-import com.example.todolist.entity.User;
-import com.example.todolist.repository.UserRepository;
+import com.example.todolist.user.User;
+import com.example.todolist.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
