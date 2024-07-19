@@ -1,6 +1,7 @@
 package com.example.todolist.task;
 
 import com.example.todolist.task.dto.CreateTaskResponse;
+import com.example.todolist.task.dto.TaskProjection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,9 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public List<Task> getAllTasks() {
+    public List<TaskProjection> getAllTasks(Long id_user) {
         Sort sort = Sort.by("priority").descending();
-        return taskRepository.findAll(sort);
+        return taskRepository.findAllProjectedBy(id_user, sort);
     }
 
     public Optional<Task> getTaskById(Long id) {

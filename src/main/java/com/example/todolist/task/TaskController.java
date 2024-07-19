@@ -2,6 +2,7 @@ package com.example.todolist.task;
 
 import com.example.todolist.task.dto.CreateTaskResponse;
 import com.example.todolist.task.dto.TaskDto;
+import com.example.todolist.task.dto.TaskProjection;
 import com.example.todolist.user.User;
 import com.example.todolist.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -51,8 +54,9 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity getTasks() {
-        var task = this.taskService.getAllTasks();
-        return ResponseEntity.ok(task);
+    public ResponseEntity<List<TaskProjection>> getTasks(@RequestAttribute("userId") Long userId) {
+
+        List<TaskProjection> tasks = this.taskService.getAllTasks(userId);
+        return ResponseEntity.ok(tasks);
     }
 }
