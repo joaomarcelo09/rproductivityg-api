@@ -24,8 +24,8 @@ public class TaskService {
         return taskRepository.findAllProjectedBy(id_user, sort);
     }
 
-    public Optional<Task> getTaskById(Long id) {
-        return taskRepository.findById(id);
+    public Optional<Task> getTaskById(Long id, Long user_id) {
+        return taskRepository.findByIdAndUser_Id(id, user_id);
     }
 
     public CreateTaskResponse saveTask(Task task) {

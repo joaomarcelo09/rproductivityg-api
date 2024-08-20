@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,6 +58,32 @@ public class TaskController {
     public ResponseEntity<List<TaskProjection>> getTasks(@RequestAttribute("userId") Long userId) {
 
         List<TaskProjection> tasks = this.taskService.getAllTasks(userId);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteTask(@PathVariable Long id, @RequestAttribute("userId") Long userId) {
+
+        Optional<Task> tasks = this.taskService.getTaskById(id, userId);
+
+        if(tasks.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        this.taskService.deleteTaskById(id);
+
+        return ResponseEntity.ok("Deletado com sucesso");
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<Task>> getTaskById(@PathVariable("id") Long id, @RequestAttribute("userId") Long userId) {
+
+        Optional<Task> tasks = this.taskService.getTaskById(id, userId);
+
+        if(tasks.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.ok(tasks);
     }
 }

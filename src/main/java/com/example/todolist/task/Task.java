@@ -24,7 +24,7 @@ public class Task {
     private Boolean completed;
     private String date_limit;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
