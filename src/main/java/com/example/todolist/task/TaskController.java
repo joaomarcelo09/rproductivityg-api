@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.swing.text.html.Option;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 
@@ -49,7 +46,7 @@ public class TaskController {
     }
 
     @PatchMapping
-    public ResponseEntity updateTask(@RequestBody Task task) {
+    public ResponseEntity<Task> updateTask(@RequestBody Task task) {
         Task upTask = this.taskService.updateTask(task);
         return ResponseEntity.ok(upTask);
     }
@@ -62,7 +59,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteTask(@PathVariable Long id, @RequestAttribute("userId") Long userId) {
+    public ResponseEntity<String> deleteTask(@PathVariable Long id, @RequestAttribute("userId") Long userId) {
 
         Optional<Task> tasks = this.taskService.getTaskById(id, userId);
 
