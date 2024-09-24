@@ -1,6 +1,10 @@
 package com.example.todolist.user;
 
+import com.example.todolist.auth.dto.RegisterRequestDto;
+import com.example.todolist.player.Player;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -8,9 +12,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<User> findById(Long id) {
@@ -21,7 +28,14 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public void save(User user) {
-        userRepository.save(user);
+    public User save(RegisterRequestDto user, Player newPlayer) {
+
+        User newUser = new User();
+        newUser.setPlayer(newPlayer);
+        newUser.setEmail(user.email());
+        newUser.setPassword(passwordEncoder.encode(user.password()));
+        newUser.setName(user.name());
+
+        return userRepository.save(newUser);
     }
 }

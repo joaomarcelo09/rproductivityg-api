@@ -46,26 +46,9 @@ public class AuthController {
         Optional<User> user = this.userService.findByEmail(body.email());
         Optional<Classes> playerClass = this.classesService.findById(body.player().id_class());
 
-
-        if (user.isEmpty()) {
-            if(playerClass.isEmpty()) {
-                return ResponseEntity.badRequest().build();
-            }
-            Player newPlayer = new Player();
-            newPlayer.setPlayerClass(playerClass.get());
-            newPlayer.setLevel(1);
-            newPlayer.setIncreaser(64);
-            newPlayer.setCurrent_experience(0);
-            newPlayer.setExperience_to_up(100);
-
-            User newUser = new User();
-            newUser.setPlayer(newPlayer);
-            newUser.setEmail(body.email());
-            newUser.setPassword(passwordEncoder.encode(body.password()));
-            newUser.setName(body.name());
-
-            this.playerService.save(newPlayer);
-            this.userService.save(newUser);
+        if (user.isEmpty() && playerClass.isPresent()) {
+            Player newPlayer = this.playerService.save(playerClass.get());
+            User newUser = this.userService.save(body, newPlayer);
 
             String token = tokenService.generateToken(newUser);
             return ResponseEntity.ok(new ResponseDto(newUser.getName(), token));
