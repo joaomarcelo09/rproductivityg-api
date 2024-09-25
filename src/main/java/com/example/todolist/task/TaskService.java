@@ -47,11 +47,13 @@ public class TaskService {
     }
 
     public Task updateTask(Task task, Long userID) {
-
+        Optional<Task> findTask = taskRepository.findById(task.getId_task());
+        if(findTask.isEmpty()) {
+            throw new RuntimeException("Task not found");
+        }
         if(!task.getUser().getId_user().equals(userID)) {
             throw new UserMismatchException("User ID does not match.");
         }
-
         return taskRepository.save(task);
     }
 
