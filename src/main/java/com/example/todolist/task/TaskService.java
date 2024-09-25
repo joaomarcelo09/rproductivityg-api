@@ -1,7 +1,10 @@
 package com.example.todolist.task;
 
+import com.example.todolist.exceptions.UserMismatchException;
 import com.example.todolist.task.dto.CreateTaskResponse;
+import com.example.todolist.task.dto.TaskDto;
 import com.example.todolist.task.dto.TaskProjection;
+import com.example.todolist.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -13,7 +16,7 @@ import java.util.Optional;
 public class TaskService {
 
 
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     @Autowired
     public TaskService(TaskRepository taskRepository) {
@@ -29,12 +32,26 @@ public class TaskService {
         return taskRepository.findByIdAndUser_Id(id, user_id);
     }
 
-    public CreateTaskResponse saveTask(Task task) {
-        Task savedTask = taskRepository.save(task);
+    public CreateTaskResponse saveTask(TaskDto task, User user) {
+
+        Task newTask = new Task();
+        newTask.setUser(user);
+        newTask.setTitle(task.title());
+        newTask.setDescription(task.description());
+        newTask.setCompleted(task.completed());
+        newTask.setPriority(task.priority());
+        newTask.setDate_limit(task.date_limit());
+
+        Task savedTask = taskRepository.save(newTask);
         return new CreateTaskResponse(savedTask.getId_task(), savedTask.getTitle(), savedTask.getDescription());
     }
 
-    public Task updateTask(Task task) {
+    public Task updateTask(Task task, Long userID) {
+
+        if(!task.getUser().getId_user().equals(userID)) {
+            throw new UserMismatchException("User ID does not match.");
+        }
+
         return taskRepository.save(task);
     }
 

@@ -18,36 +18,27 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TaskController {
 
-    @Autowired
     private TaskService taskService;
 
-    @Autowired
     private UserService userService;
+
+    @Autowired
+    public TaskController(TaskService taskService, UserService userService) {
+        this.taskService = taskService;
+        this.userService = userService;
+    }
 
 
     @PostMapping
     public ResponseEntity<CreateTaskResponse> createTask(@RequestBody TaskDto task) {
         Optional<User> user = this.userService.findById(task.user_id());
-        if(user.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        User userExists = user.get();
-
-        Task newTask = new Task();
-        newTask.setUser(userExists);
-        newTask.setTitle(task.title());
-        newTask.setDescription(task.description());
-        newTask.setCompleted(task.completed());
-        newTask.setPriority(task.priority());
-        newTask.setDate_limit(task.date_limit());
-
-        return ResponseEntity.ok(this.taskService.saveTask(newTask));
+        return user.map(value -> ResponseEntity.ok(this.taskService.saveTask(task, value)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PatchMapping
-    public ResponseEntity<Task> updateTask(@RequestBody Task task) {
-        Task upTask = this.taskService.updateTask(task);
+    public ResponseEntity<Task> updateTask(@RequestBody Task task, @RequestAttribute("userId") Long userId) {
+        Task upTask = this.taskService.updateTask(task, userId);
         return ResponseEntity.ok(upTask);
     }
 
