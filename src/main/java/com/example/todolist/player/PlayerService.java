@@ -1,12 +1,11 @@
 package com.example.todolist.player;
 
 import com.example.todolist.classes.Classes;
+import com.example.todolist.exceptions.UserNotFound;
 import com.example.todolist.user.User;
 import com.example.todolist.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class PlayerService {
@@ -35,14 +34,9 @@ public class PlayerService {
         return newPlayer;
     }
 
-    public Player increaseLevel(Long userID) {
-        Optional<User> userOpt = userService.findById(userID);
+    public Player increaseExperience(Long userID) {
+        User user = userService.findById(userID).orElseThrow(() -> new UserNotFound("User not found"));
 
-        if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
-
-        User user = userOpt.get();
         Player player = user.getPlayer();
         int playerXpIncreased = player.getCurrent_experience() + 12;
 
