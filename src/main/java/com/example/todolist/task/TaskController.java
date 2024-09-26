@@ -49,15 +49,7 @@ public class TaskController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable Long id, @RequestAttribute("userId") Long userId) {
-
-        Optional<Task> tasks = this.taskService.getTaskById(id, userId);
-
-        if(tasks.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-
-        this.taskService.deleteTaskById(id);
-
+        this.taskService.deleteTaskById(id, userId);
         return ResponseEntity.ok("Deletado com sucesso");
     }
 
