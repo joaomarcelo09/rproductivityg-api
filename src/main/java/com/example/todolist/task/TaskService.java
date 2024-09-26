@@ -1,10 +1,11 @@
 package com.example.todolist.task;
 
-import com.example.todolist.exceptions.UserMismatchException;
+import com.example.todolist.exceptions.TaskNotFoundException;
 import com.example.todolist.player.Player;
 import com.example.todolist.player.PlayerService;
 import com.example.todolist.task.dto.*;
 import com.example.todolist.user.User;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class TaskService {
 
 
@@ -49,34 +51,14 @@ public class TaskService {
     }
 
     public UpdateTaskResponse updateTask(UpdateTaskDto task, Long userID) {
-        Optional<Task> findTask = taskRepository.findById(task.id_task());
-        if(findTask.isEmpty()) {
-            throw new RuntimeException("Task not found");
-        }
-        if(!task.id_user().equals(userID)) {
-            throw new UserMismatchException("User ID does not match.");
-        }
+        Task upTask = taskRepository.findByIdAndUser_Id(task.id_task(), userID)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found for this user"));
 
-        Task upTask = findTask.get();
-        upTask.setId_task(task.id_task());
-        upTask.setTitle(task.title());
-        upTask.setDescription(task.description());
-        upTask.setPriority(task.priority());
-        upTask.setDate_limit(task.date_limit());
-        upTask.setCompleted(task.completed());
-        upTask.setPriority(task.priority());
-
-        UpdateTaskDto resTask = new UpdateTaskDto(
-                upTask.getId_task(),
-                upTask.getDate_limit(),
-                upTask.getTitle(),
-                upTask.getCompleted(),
-                upTask.getPriority(),
-                upTask.getDescription(),
-                upTask.getUser().getId_user());
+        TaskMapper.mapUpdateDtoToTask(task, upTask);
+        UpdateTaskDto resTask = TaskMapper.mapTaskToUpdateDto(upTask);
 
         if(task.completed()){
-            Player increasedLevel = playerService.increaseLevel(userID);
+            Player increasedLevel = playerService.increaseExperience(userID);
             taskRepository.save(upTask);
             return new UpdateTaskResponse(
                     resTask,
@@ -84,14 +66,15 @@ public class TaskService {
             );
         } else {taskRepository.save(upTask);}
 
-        return
-                new UpdateTaskResponse(
+        return new UpdateTaskResponse(
                         resTask,
                         upTask.getUser().getPlayer()
                         );
     }
 
-    public void deleteTaskById(Long id) {
+    public void deleteTaskById(Long id, Long userID) {
+        this.taskRepository.findByIdAndUser_Id(id, userID)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found for this user"));
         taskRepository.deleteById(id);
     }
 }
