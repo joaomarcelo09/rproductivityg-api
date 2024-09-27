@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +44,7 @@ public class TaskService {
         newTask.setUser(user);
         newTask.setTitle(task.title());
         newTask.setDescription(task.description());
+        newTask.setCreated_at(new Date().toString());
         newTask.setCompleted(false);
         newTask.setPriority(task.priority());
         newTask.setDate_limit(task.date_limit());
@@ -56,7 +58,6 @@ public class TaskService {
                 .orElseThrow(TaskNotFoundException::new);
 
         TaskMapper.mapUpdateDtoToTask(task, upTask);
-        UpdateTaskDto resTask = TaskMapper.mapTaskToUpdateDto(upTask);
 
         if(upTask.getCompleted()) {
             throw new TaskCompletedException();
@@ -64,12 +65,16 @@ public class TaskService {
 
         if(task.completed()){
             Player increasedLevel = playerService.increaseExperience(userID);
+            upTask.setTime_spent(new Date().toString());
+            UpdateTaskDto resTask = TaskMapper.mapTaskToUpdateDto(upTask);
             taskRepository.save(upTask);
             return new UpdateTaskResponse(
                     resTask,
                     increasedLevel
             );
-        } else {taskRepository.save(upTask);}
+        } else {
+            taskRepository.save(upTask);}
+        UpdateTaskDto resTask = TaskMapper.mapTaskToUpdateDto(upTask);
 
         return new UpdateTaskResponse(
                         resTask,
