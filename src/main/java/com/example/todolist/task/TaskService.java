@@ -1,5 +1,6 @@
 package com.example.todolist.task;
 
+import com.example.todolist.exceptions.TaskCompletedException;
 import com.example.todolist.exceptions.TaskNotFoundException;
 import com.example.todolist.player.Player;
 import com.example.todolist.player.PlayerService;
@@ -52,10 +53,14 @@ public class TaskService {
 
     public UpdateTaskResponse updateTask(UpdateTaskDto task, Long userID) {
         Task upTask = taskRepository.findByIdAndUser_Id(task.id_task(), userID)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found for this user"));
+                .orElseThrow(TaskNotFoundException::new);
 
         TaskMapper.mapUpdateDtoToTask(task, upTask);
         UpdateTaskDto resTask = TaskMapper.mapTaskToUpdateDto(upTask);
+
+        if(upTask.getCompleted()) {
+            throw new TaskCompletedException();
+        }
 
         if(task.completed()){
             Player increasedLevel = playerService.increaseExperience(userID);
@@ -74,7 +79,7 @@ public class TaskService {
 
     public void deleteTaskById(Long id, Long userID) {
         this.taskRepository.findByIdAndUser_Id(id, userID)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found for this user"));
+                .orElseThrow(TaskNotFoundException::new);
         taskRepository.deleteById(id);
     }
 }
