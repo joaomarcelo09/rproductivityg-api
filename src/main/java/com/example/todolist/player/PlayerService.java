@@ -35,7 +35,7 @@ public class PlayerService {
     }
 
     public Player increaseExperience(Long userID) {
-        User user = userService.findById(userID).orElseThrow(() -> new UserNotFound("User not found"));
+        User user = userService.findById(userID).orElseThrow(UserNotFound::new);
 
         Player player = user.getPlayer();
         int playerXpIncreased = player.getCurrent_experience() + 12;
