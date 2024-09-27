@@ -22,6 +22,9 @@ public class TaskMapper {
                 task.getCompleted(),
                 task.getPriority(),
                 task.getDescription(),
-                task.getUser().getId_user());
+                task.getUser().getId_user(),
+                task.getCreated_at(),
+                task.getTime_spent()
+        );
     }
 }
