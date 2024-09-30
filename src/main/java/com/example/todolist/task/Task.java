@@ -23,13 +23,17 @@ public class Task {
     private int priority;
     private Boolean completed;
     private String date_limit;
+    private String created_at;
+    private String time_spent;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Task(User user, String title, String description, int priority, boolean completed, String date_limit) {
+    public Task(User user, String title, String description, int priority, boolean completed, String date_limit, String created_at, String time_spent) {
 
+        this.created_at = created_at;
+        this.time_spent = time_spent;
         this.title = title;
         this.description = description;
         this.priority = priority;

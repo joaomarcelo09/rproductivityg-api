@@ -1,8 +1,6 @@
 package com.example.todolist.task;
 
-import com.example.todolist.task.dto.CreateTaskResponse;
-import com.example.todolist.task.dto.TaskDto;
-import com.example.todolist.task.dto.TaskProjection;
+import com.example.todolist.task.dto.*;
 import com.example.todolist.user.User;
 import com.example.todolist.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +28,15 @@ public class TaskController {
 
 
     @PostMapping
-    public ResponseEntity<CreateTaskResponse> createTask(@RequestBody TaskDto task) {
-        Optional<User> user = this.userService.findById(task.user_id());
+    public ResponseEntity<CreateTaskResponse> createTask(@RequestBody TaskDto task, @RequestAttribute("userId") Long userId) {
+        Optional<User> user = this.userService.findById(userId);
         return user.map(value -> ResponseEntity.ok(this.taskService.saveTask(task, value)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PatchMapping
-    public ResponseEntity<Task> updateTask(@RequestBody Task task, @RequestAttribute("userId") Long userId) {
-        Task upTask = this.taskService.updateTask(task, userId);
+    public ResponseEntity<UpdateTaskResponse> updateTask(@RequestBody UpdateTaskDto task, @RequestAttribute("userId") Long userId) {
+        UpdateTaskResponse upTask = this.taskService.updateTask(task, userId);
         return ResponseEntity.ok(upTask);
     }
 
@@ -51,15 +49,7 @@ public class TaskController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable Long id, @RequestAttribute("userId") Long userId) {
-
-        Optional<Task> tasks = this.taskService.getTaskById(id, userId);
-
-        if(tasks.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-
-        this.taskService.deleteTaskById(id);
-
+        this.taskService.deleteTaskById(id, userId);
         return ResponseEntity.ok("Deletado com sucesso");
     }
 
