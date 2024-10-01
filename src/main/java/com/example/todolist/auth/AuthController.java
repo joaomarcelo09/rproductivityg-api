@@ -10,6 +10,7 @@ import com.example.todolist.player.PlayerService;
 import com.example.todolist.user.User;
 import com.example.todolist.infra.security.TokenService;
 import com.example.todolist.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +31,7 @@ public class AuthController {
     private final ClassesService classesService;
     private final PlayerService playerService;
 
+    @Operation(summary = "Login a user")
     @PostMapping("/login")
     public ResponseEntity<ResponseDto> login(@RequestBody LoginRequestDto body) {
         User user = this.userService.findByEmail(body.email())
@@ -41,6 +43,7 @@ public class AuthController {
         return ResponseEntity.badRequest().build();
     }
 
+    @Operation(summary = "Register a user")
     @PostMapping("/register")
     public ResponseEntity<ResponseDto> register(@RequestBody RegisterRequestDto body) {
         Optional<User> user = this.userService.findByEmail(body.email());
