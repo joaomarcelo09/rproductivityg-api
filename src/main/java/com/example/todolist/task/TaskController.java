@@ -1,8 +1,6 @@
 package com.example.todolist.task;
 
 import com.example.todolist.task.dto.*;
-import com.example.todolist.user.User;
-import com.example.todolist.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,7 @@ public class TaskController {
     private TaskService taskService;
 
     @Autowired
-    public TaskController(TaskService taskService, UserService userService) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
 
