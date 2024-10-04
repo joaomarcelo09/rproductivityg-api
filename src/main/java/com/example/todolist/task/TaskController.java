@@ -18,20 +18,15 @@ public class TaskController {
 
     private TaskService taskService;
 
-    private UserService userService;
-
     @Autowired
     public TaskController(TaskService taskService, UserService userService) {
         this.taskService = taskService;
-        this.userService = userService;
     }
 
 
     @PostMapping
     public ResponseEntity<CreateTaskResponse> createTask(@RequestBody TaskDto task, @RequestAttribute("userId") Long userId) {
-        Optional<User> user = this.userService.findById(userId);
-        return user.map(value -> ResponseEntity.ok(this.taskService.saveTask(task, value)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(this.taskService.saveTask(task, userId));
     }
 
     @PatchMapping
@@ -49,14 +44,14 @@ public class TaskController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable Long id, @RequestAttribute("userId") Long userId) {
-        this.taskService.deleteTaskById(id, userId);
+        this.taskService.deleteTaskById(id, userId, null);
         return ResponseEntity.ok("Deletado com sucesso");
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Task>> getTaskById(@PathVariable("id") Long id, @RequestAttribute("userId") Long userId) {
 
-        Optional<Task> tasks = this.taskService.getTaskById(id, userId);
+        Optional<Task> tasks = this.taskService.getTaskById(id, userId, null);
 
         if(tasks.isEmpty()){
             return ResponseEntity.notFound().build();
