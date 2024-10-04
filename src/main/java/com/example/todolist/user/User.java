@@ -24,7 +24,7 @@ public class User {
     private String email;
     private String password;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_player")
     private Player player;
 
