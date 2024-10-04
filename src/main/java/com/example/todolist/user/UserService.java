@@ -1,6 +1,7 @@
 package com.example.todolist.user;
 
 import com.example.todolist.auth.dto.RegisterRequestDto;
+import com.example.todolist.exceptions.UserNotFound;
 import com.example.todolist.player.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(UserNotFound::new);
     }
 
     public Optional<User> findByEmail(String email) {
