@@ -1,7 +1,7 @@
 package com.example.todolist.player;
 
 import com.example.todolist.classes.Classes;
-import com.example.todolist.exceptions.UserNotFound;
+import com.example.todolist.exceptions.PlayerNotFound;
 import com.example.todolist.user.User;
 import com.example.todolist.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class PlayerService {
     }
 
     public Player increaseExperience(Long userID) {
-        User user = userService.findById(userID).orElseThrow(UserNotFound::new);
+        User user = userService.findById(userID);
 
         Player player = user.getPlayer();
         int playerXpIncreased = player.getCurrent_experience() + 12;
@@ -52,6 +52,14 @@ public class PlayerService {
         userService.update(user);
 
         return player;
+    }
+
+    public void updatePlayer(Player player) {
+        this.playerRepository.save(player);
+    }
+
+    public Player findById(Long playerID) {
+        return this.playerRepository.findById(playerID).orElseThrow(PlayerNotFound::new);
     }
 
 }
