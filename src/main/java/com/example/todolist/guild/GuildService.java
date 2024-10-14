@@ -2,16 +2,20 @@ package com.example.todolist.guild;
 
 import com.example.todolist.exceptions.guild.GuildNotFound;
 import com.example.todolist.exceptions.guild.PlayerAlreadyHasGuild;
+import com.example.todolist.guild.dto.CompleteTaskGuildDto;
 import com.example.todolist.guild.dto.GuildDto;
 import com.example.todolist.guild.dto.GuildResponse;
 import com.example.todolist.player.Player;
 import com.example.todolist.player.PlayerService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class GuildService {
     private final GuildRepository guildRepository;
     private final PlayerService playerService;
+
     public GuildService(GuildRepository guildRepository, PlayerService playerService) {
         this.guildRepository = guildRepository;
         this.playerService = playerService;
@@ -19,6 +23,37 @@ public class GuildService {
 
     public Guild findById(long id) {
         return guildRepository.findById(id).orElseThrow(GuildNotFound::new);
+    }
+
+    public CompleteTaskGuildDto increaseExp(Long guildId){
+
+        Guild guild = guildRepository.findById(guildId).orElseThrow(GuildNotFound::new);
+
+        int guildXpIncreased = guild.getCurrent_experience() + 12;
+        if(guildXpIncreased >= guild.getExperience_to_up()) {
+            guild.setLevel(guild.getLevel() + 1);
+            guild.setCurrent_experience(0);
+            guild.setExperience_to_up(guild.getExperience_to_up() + guild.getIncreaser());
+        } else {
+            guild.setCurrent_experience(guildXpIncreased);
+        }
+        guildRepository.save(guild);
+
+        List<Player> playersToUp = guild.getPlayers();
+        List<Player> uppedPlayers = new java.util.ArrayList<>(List.of());
+
+        for(Player player : playersToUp) {
+            Player upPlayer = playerService.increaseExperience(player);
+            uppedPlayers.add(upPlayer);
+        }
+
+        return new CompleteTaskGuildDto(new GuildResponse(
+                guild.getTitle(),
+                guild.getOwner().getId_player(),
+                guild.getLevel(),
+                guild.getCurrent_experience(),
+                guild.getExperience_to_up()
+        ), uppedPlayers);
     }
 
     public GuildResponse save(GuildDto guild) {

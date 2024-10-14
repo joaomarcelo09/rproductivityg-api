@@ -2,22 +2,16 @@ package com.example.todolist.player;
 
 import com.example.todolist.classes.Classes;
 import com.example.todolist.exceptions.PlayerNotFound;
-import com.example.todolist.user.User;
-import com.example.todolist.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PlayerService {
     private final PlayerRepository playerRepository;
-    private final UserService userService;
 
     @Autowired
-    public PlayerService(PlayerRepository playerRepository, UserService userService) {
+    public PlayerService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
-        this.userService = userService;
-
-
     }
 
     public Player save(Classes playerClass) {
@@ -34,10 +28,8 @@ public class PlayerService {
         return newPlayer;
     }
 
-    public Player increaseExperience(Long userID) {
-        User user = userService.findById(userID);
+    public Player increaseExperience(Player player) {
 
-        Player player = user.getPlayer();
         int playerXpIncreased = player.getCurrent_experience() + 12;
 
         if (playerXpIncreased >= player.getExperience_to_up()) {
@@ -49,7 +41,6 @@ public class PlayerService {
         }
 
         playerRepository.save(player);
-        userService.update(user);
 
         return player;
     }

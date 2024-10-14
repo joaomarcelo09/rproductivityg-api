@@ -78,7 +78,7 @@ public class TaskService {
         }
 
         if (task.completed()) {
-            Player increasedLevel = playerService.increaseExperience(userID);
+            Player increasedLevel = playerService.increaseExperience(upTask.getUser().getPlayer());
             upTask.setTime_spent(new Date().toString());
             UpdateTaskDto resTask = TaskMapper.mapTaskToUpdateDto(upTask);
             taskRepository.save(upTask);

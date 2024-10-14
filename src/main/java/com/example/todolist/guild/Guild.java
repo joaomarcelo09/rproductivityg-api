@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "guilds")
 @Getter
@@ -24,6 +27,10 @@ public class Guild {
     private Integer current_experience;
     private Integer experience_to_up;
     private Integer increaser;
+
+    @OneToMany(mappedBy = "guild")
+    private List<Player> players;
+
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_owner")
