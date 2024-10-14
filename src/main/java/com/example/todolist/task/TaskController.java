@@ -1,8 +1,7 @@
 package com.example.todolist.task;
 
+import com.example.todolist.guild.dto.CompleteTaskGuildResponse;
 import com.example.todolist.task.dto.*;
-import com.example.todolist.user.User;
-import com.example.todolist.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,25 +17,26 @@ public class TaskController {
 
     private TaskService taskService;
 
-    private UserService userService;
-
     @Autowired
-    public TaskController(TaskService taskService, UserService userService) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
-        this.userService = userService;
     }
 
 
     @PostMapping
     public ResponseEntity<CreateTaskResponse> createTask(@RequestBody TaskDto task, @RequestAttribute("userId") Long userId) {
-        Optional<User> user = this.userService.findById(userId);
-        return user.map(value -> ResponseEntity.ok(this.taskService.saveTask(task, value)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(this.taskService.saveTask(task, userId));
     }
 
     @PatchMapping
     public ResponseEntity<UpdateTaskResponse> updateTask(@RequestBody UpdateTaskDto task, @RequestAttribute("userId") Long userId) {
         UpdateTaskResponse upTask = this.taskService.updateTask(task, userId);
+        return ResponseEntity.ok(upTask);
+    }
+
+    @PatchMapping("/guild_complete")
+    public ResponseEntity<CompleteTaskGuildResponse> completeTaskGuild(@RequestBody CompleteGuildTaskDto task) {
+        CompleteTaskGuildResponse upTask = this.taskService.completeTaskGuild(task);
         return ResponseEntity.ok(upTask);
     }
 

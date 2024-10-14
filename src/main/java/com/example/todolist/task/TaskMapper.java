@@ -24,7 +24,8 @@ public class TaskMapper {
                 task.getDescription(),
                 task.getUser().getId_user(),
                 task.getCreated_at(),
-                task.getTime_spent()
+                task.getTime_spent(),
+                task.getGuild().getId_guild()
         );
     }
 }

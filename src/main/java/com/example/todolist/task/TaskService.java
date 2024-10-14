@@ -2,10 +2,14 @@ package com.example.todolist.task;
 
 import com.example.todolist.exceptions.TaskCompletedException;
 import com.example.todolist.exceptions.TaskNotFoundException;
+import com.example.todolist.guild.Guild;
+import com.example.todolist.guild.GuildService;
+import com.example.todolist.guild.dto.CompleteTaskGuildResponse;
 import com.example.todolist.player.Player;
 import com.example.todolist.player.PlayerService;
 import com.example.todolist.task.dto.*;
 import com.example.todolist.user.User;
+import com.example.todolist.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -22,11 +26,15 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final PlayerService playerService;
+    private final UserService userService;
+    private final GuildService guildService;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, PlayerService playerService) {
+    public TaskService(TaskRepository taskRepository, PlayerService playerService, UserService userService, GuildService guildService) {
         this.taskRepository = taskRepository;
         this.playerService = playerService;
+        this.userService = userService;
+        this.guildService = guildService;
     }
 
     public List<TaskProjection> getAllTasks(Long id_user) {
@@ -38,10 +46,17 @@ public class TaskService {
         return taskRepository.findByIdAndUser_Id(id, user_id);
     }
 
-    public CreateTaskResponse saveTask(TaskDto task, User user) {
+    public CreateTaskResponse saveTask(TaskDto task, Long user_id) {
 
         Task newTask = new Task();
-        newTask.setUser(user);
+
+        if (task.guild_id() != null) {
+            Guild guild = guildService.findById(task.guild_id());
+            newTask.setGuild(guild);
+        } else {
+            User user = userService.findById(user_id);
+            newTask.setUser(user);
+        }
         newTask.setTitle(task.title());
         newTask.setDescription(task.description());
         newTask.setCreated_at(new Date().toString());
@@ -59,12 +74,12 @@ public class TaskService {
 
         TaskMapper.mapUpdateDtoToTask(task, upTask);
 
-        if(upTask.getCompleted()) {
+        if (upTask.getCompleted()) {
             throw new TaskCompletedException();
         }
 
-        if(task.completed()){
-            Player increasedLevel = playerService.increaseExperience(userID);
+        if (task.completed()) {
+            Player increasedLevel = playerService.increaseExperience(upTask.getUser().getPlayer());
             upTask.setTime_spent(new Date().toString());
             UpdateTaskDto resTask = TaskMapper.mapTaskToUpdateDto(upTask);
             taskRepository.save(upTask);
@@ -73,13 +88,30 @@ public class TaskService {
                     increasedLevel
             );
         } else {
-            taskRepository.save(upTask);}
+            taskRepository.save(upTask);
+        }
         UpdateTaskDto resTask = TaskMapper.mapTaskToUpdateDto(upTask);
 
         return new UpdateTaskResponse(
-                        resTask,
-                        upTask.getUser().getPlayer()
-                        );
+                resTask,
+                upTask.getUser().getPlayer()
+        );
+    }
+
+    public CompleteTaskGuildResponse completeTaskGuild(CompleteGuildTaskDto task) {
+
+        Task upTask = taskRepository.findByIdAndGuild_Id(task.id_task(), task.id_guild()).orElseThrow(TaskNotFoundException::new);
+
+        if (upTask.getCompleted()) {
+            throw new TaskCompletedException();
+        }
+
+        CompleteTaskGuildResponse guildXp = guildService.increaseExp(upTask.getGuild().getId_guild());
+        upTask.setTime_spent(new Date().toString());
+        upTask.setCompleted(true);
+        taskRepository.save(upTask);
+
+        return guildXp;
     }
 
     public void deleteTaskById(Long id, Long userID) {
