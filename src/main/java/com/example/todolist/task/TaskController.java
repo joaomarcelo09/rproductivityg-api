@@ -1,5 +1,6 @@
 package com.example.todolist.task;
 
+import com.example.todolist.guild.dto.CompleteTaskGuildResponse;
 import com.example.todolist.task.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,12 @@ public class TaskController {
         return ResponseEntity.ok(upTask);
     }
 
+    @PatchMapping("/guild_complete")
+    public ResponseEntity<CompleteTaskGuildResponse> completeTaskGuild(@RequestBody CompleteGuildTaskDto task) {
+        CompleteTaskGuildResponse upTask = this.taskService.completeTaskGuild(task);
+        return ResponseEntity.ok(upTask);
+    }
+
     @GetMapping
     public ResponseEntity<List<TaskProjection>> getTasks(@RequestAttribute("userId") Long userId) {
 
@@ -42,14 +49,14 @@ public class TaskController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable Long id, @RequestAttribute("userId") Long userId) {
-        this.taskService.deleteTaskById(id, userId, null);
+        this.taskService.deleteTaskById(id, userId);
         return ResponseEntity.ok("Deletado com sucesso");
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Task>> getTaskById(@PathVariable("id") Long id, @RequestAttribute("userId") Long userId) {
 
-        Optional<Task> tasks = this.taskService.getTaskById(id, userId, null);
+        Optional<Task> tasks = this.taskService.getTaskById(id, userId);
 
         if(tasks.isEmpty()){
             return ResponseEntity.notFound().build();

@@ -2,9 +2,10 @@ package com.example.todolist.guild;
 
 import com.example.todolist.exceptions.guild.GuildNotFound;
 import com.example.todolist.exceptions.guild.PlayerAlreadyHasGuild;
-import com.example.todolist.guild.dto.CompleteTaskGuildDto;
+import com.example.todolist.guild.dto.CompleteTaskGuildResponse;
 import com.example.todolist.guild.dto.GuildDto;
 import com.example.todolist.guild.dto.GuildResponse;
+import com.example.todolist.player.CompleteTaskGuildPlayerDto;
 import com.example.todolist.player.Player;
 import com.example.todolist.player.PlayerService;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class GuildService {
         return guildRepository.findById(id).orElseThrow(GuildNotFound::new);
     }
 
-    public CompleteTaskGuildDto increaseExp(Long guildId){
+    public CompleteTaskGuildResponse increaseExp(Long guildId){
 
         Guild guild = guildRepository.findById(guildId).orElseThrow(GuildNotFound::new);
 
@@ -40,14 +41,18 @@ public class GuildService {
         guildRepository.save(guild);
 
         List<Player> playersToUp = guild.getPlayers();
-        List<Player> uppedPlayers = new java.util.ArrayList<>(List.of());
+        List<CompleteTaskGuildPlayerDto> uppedPlayers = new java.util.ArrayList<>(List.of());
 
         for(Player player : playersToUp) {
             Player upPlayer = playerService.increaseExperience(player);
-            uppedPlayers.add(upPlayer);
+            uppedPlayers.add(new CompleteTaskGuildPlayerDto(
+                    upPlayer.getId_player(),
+                    upPlayer.getLevel(),
+                    upPlayer.getCurrent_experience(),
+                    upPlayer.getExperience_to_up()));
         }
 
-        return new CompleteTaskGuildDto(new GuildResponse(
+        return new CompleteTaskGuildResponse(new GuildResponse(
                 guild.getTitle(),
                 guild.getOwner().getId_player(),
                 guild.getLevel(),

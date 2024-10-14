@@ -4,6 +4,7 @@ import com.example.todolist.exceptions.TaskCompletedException;
 import com.example.todolist.exceptions.TaskNotFoundException;
 import com.example.todolist.guild.Guild;
 import com.example.todolist.guild.GuildService;
+import com.example.todolist.guild.dto.CompleteTaskGuildResponse;
 import com.example.todolist.player.Player;
 import com.example.todolist.player.PlayerService;
 import com.example.todolist.task.dto.*;
@@ -41,8 +42,8 @@ public class TaskService {
         return taskRepository.findAllProjectedBy(id_user, sort);
     }
 
-    public Optional<Task> getTaskById(Long id, Long user_id, Long guild_id) {
-        return taskRepository.findByIdAndUser_Id(id, user_id, guild_id);
+    public Optional<Task> getTaskById(Long id, Long user_id) {
+        return taskRepository.findByIdAndUser_Id(id, user_id);
     }
 
     public CreateTaskResponse saveTask(TaskDto task, Long user_id) {
@@ -68,7 +69,7 @@ public class TaskService {
     }
 
     public UpdateTaskResponse updateTask(UpdateTaskDto task, Long userID) {
-        Task upTask = taskRepository.findByIdAndUser_Id(task.id_task(), userID, task.guild_id())
+        Task upTask = taskRepository.findByIdAndUser_Id(task.id_task(), userID)
                 .orElseThrow(TaskNotFoundException::new);
 
         TaskMapper.mapUpdateDtoToTask(task, upTask);
@@ -97,8 +98,24 @@ public class TaskService {
         );
     }
 
-    public void deleteTaskById(Long id, Long userID, Long guild_id) {
-        this.taskRepository.findByIdAndUser_Id(id, userID, guild_id)
+    public CompleteTaskGuildResponse completeTaskGuild(CompleteGuildTaskDto task) {
+
+        Task upTask = taskRepository.findByIdAndGuild_Id(task.id_task(), task.id_guild()).orElseThrow(TaskNotFoundException::new);
+
+        if (upTask.getCompleted()) {
+            throw new TaskCompletedException();
+        }
+
+        CompleteTaskGuildResponse guildXp = guildService.increaseExp(upTask.getGuild().getId_guild());
+        upTask.setTime_spent(new Date().toString());
+        upTask.setCompleted(true);
+        taskRepository.save(upTask);
+
+        return guildXp;
+    }
+
+    public void deleteTaskById(Long id, Long userID) {
+        this.taskRepository.findByIdAndUser_Id(id, userID)
                 .orElseThrow(TaskNotFoundException::new);
         taskRepository.deleteById(id);
     }
